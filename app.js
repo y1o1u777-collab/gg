@@ -1,5 +1,5 @@
 // Moonlight Krathong — CSS raft visuals + Supabase shared gallery
-const SUPABASE_URL = 'https://rjptgwizguhuzfwpjhge.supabase.co';
+const SUPABASE_URL = 'https://nnqvbobvdgztpxptxbcd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_ZoAK_IyejwW1H2ZVBU4xCg_BSHkhjM8';
 const keyReady = SUPABASE_ANON_KEY.startsWith('ey') || SUPABASE_ANON_KEY.startsWith('sb_publishable');
 const supabase = (window.supabase && keyReady) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
