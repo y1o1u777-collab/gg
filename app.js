@@ -1,6 +1,6 @@
 // Moonlight Krathong — CSS raft visuals + Supabase shared gallery
 const SUPABASE_URL = 'https://rjptgwizguhuzfwpjhge.supabase.co';
-const SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE';
+const SUPABASE_ANON_KEY = 'sb_publishable_ZoAK_IyejwW1H2ZVBU4xCg_BSHkhjM8';
 const keyReady = SUPABASE_ANON_KEY.startsWith('ey') || SUPABASE_ANON_KEY.startsWith('sb_publishable');
 const supabase = (window.supabase && keyReady) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const designs=[['gold','ทอง','🌟'],['lotus','บัวชมพู','🌸'],['jasmine','มะลิ','🤍'],['marigold','ดาวเรือง','🟠'],['purple','ม่วง','💜'],['nature','ธรรมชาติ','🍃'],['colorful','หลากสี','🌈'],['moon','จันทร์','🌙']];
