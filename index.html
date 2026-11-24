@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moonlight Krathong • ลอยกระทงใต้แสงจันทร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div class="ambient"></div><nav><a class="brand" href="#home">✦ MOONLIGHT <span>KRATHONG</span></a><div><button class="navbtn" data-page="home">หน้าแรก</button><button class="navbtn" data-page="create">สร้างกระทง</button><button class="navbtn" data-page="gallery">กระทงที่ลอย</button></div></nav>
+<main>
+<section id="home" class="page active"><div class="hero"><div class="hero-copy"><p class="eyebrow">Loy Krathong • Festival of Light</p><h1>ลอยความหวัง<br><em>ไปกับสายน้ำ</em></h1><p class="lead">ค่ำคืนที่แสงจันทร์สะท้อนผิวน้ำ ให้คำอวยพรเล็ก ๆ ล่องไปในโลกที่เต็มไปด้วยแสงสีม่วงและทอง</p><div class="actions"><button class="primary" data-page="create">✦ สร้างกระทงของฉัน</button><button class="secondary" data-page="gallery">ชมกระทงที่ลอยแล้ว</button></div><div class="stats"><span>✧ <b id="count">—</b> กระทงแห่งคำอวยพร</span><span>☾ คืนแห่งแสงจันทร์</span></div></div><div class="hero-art"><div class="moon"></div><div class="hero-water"></div><div class="hero-krathong" id="heroKrathong"></div><div class="sparkles"></div></div></div></section>
+<section id="create" class="page"><div class="section-head"><p class="eyebrow">MAKE YOUR OWN LIGHT</p><h2>สร้างกระทงของคุณ</h2><p>เลือกสีและลวดลาย แล้วส่งคำอวยพรไปตามสายน้ำ</p></div><div class="builder"><div class="preview"><div class="preview-sky"><div class="moon small"></div><div class="preview-water"></div><div id="previewKrathong" class="krathong"></div></div><div class="designs" id="designs"></div><label>ชื่อกระทง / ลวดลาย</label></div><div class="formbox"><label for="sender">กระทงนี้มาจากใคร?</label><input id="sender" maxlength="30" placeholder="ชื่อเล่น หรือชื่อที่อยากให้แสดง"><label for="wish">คำอวยพร</label><textarea id="wish" maxlength="180" rows="4" placeholder="ขอให้ปีนี้เต็มไปด้วยความสุข..."></textarea><div class="counter"><span>คำอวยพรของคุณ</span><span id="wishCount">0 / 180</span></div><button id="launch" class="primary wide">✦ ลอยกระทง</button><p class="hint">ชื่อและคำอวยพรจะปรากฏในแกลเลอรีสาธารณะ</p></div></div></section>
+<section id="gallery" class="page"><div class="section-head"><p class="eyebrow">A RIVER OF WISHES</p><h2>กระทงที่ลอยอยู่</h2><p>ทุกคำอวยพรเป็นแสงเล็ก ๆ บนสายน้ำเดียวกัน</p></div><div class="gallery-water"><div class="river-glow"></div><div id="river" class="river"></div></div><div id="cards" class="cards"></div><button id="refresh" class="secondary">↻ รีเฟรชสายน้ำ</button></section>
+</main><footer>✦ Moonlight Krathong <span>•</span> ลอยด้วยใจ อ่อนโยนต่อสายน้ำ</footer>
+<div id="toast" class="toast"></div><div id="flight" class="flight"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script><script src="app.js"></script></body></html>
