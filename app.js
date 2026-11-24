@@ -1,25 +1,268 @@
-// Moonlight Krathong — CSS raft visuals + Supabase shared gallery
+
+ // Moonlight Krathong — CSS raft visuals + Supabase shared gallery
+
 const SUPABASE_URL = 'https://nnqvbobvdgztpxptxbcd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_ZoAK_IyejwW1H2ZVBU4xCg_BSHkhjM8';
-const keyReady = SUPABASE_ANON_KEY.startsWith('ey') || SUPABASE_ANON_KEY.startsWith('sb_publishable');
-const supabase = (window.supabase && keyReady) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-const designs=[['gold','ทอง','🌟'],['lotus','บัวชมพู','🌸'],['jasmine','มะลิ','🤍'],['marigold','ดาวเรือง','🟠'],['purple','ม่วง','💜'],['nature','ธรรมชาติ','🍃'],['colorful','หลากสี','🌈'],['moon','จันทร์','🌙']];
-let selected='lotus',wishes=[],realtimeChannel=null;
-const pages=document.querySelectorAll('.page');
-function showPage(id){pages.forEach(p=>p.classList.toggle('active',p.id===id));if(id==='gallery')loadWishes();window.scrollTo({top:0,behavior:'smooth'});}
-document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-document.getElementById('wish').addEventListener('input',e=>document.getElementById('wishCount').textContent=e.target.value.length+' / 180');
-function boatHTML(style){let color={gold:'#ffca45',lotus:'#f6a6dd',jasmine:'#fff4cf',marigold:'#f99a3d',purple:'#b98bff',nature:'#81d5a0',colorful:'#ff89d3',moon:'#b7d9ff'}[style]||'#ffd66b';return `<div class="raft3d" style="--petal:${color}"><div class="base"></div><div class="petals">${Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="center"></div><div class="candle"></div><div class="flame"></div></div>`}
-function renderBoat(el,style){if(el)el.innerHTML=boatHTML(style)}
-function setup(){document.getElementById('designs').innerHTML=designs.map(([id,label,emoji])=>`<button class="design ${id===selected?'selected':''}" data-design="${id}" type="button">${emoji} ${label}</button>`).join('');document.querySelectorAll('[data-design]').forEach(b=>b.onclick=()=>{selected=b.dataset.design;document.querySelectorAll('.design').forEach(x=>x.classList.toggle('selected',x.dataset.design===selected));renderBoat(document.getElementById('previewKrathong'),selected);renderBoat(document.getElementById('heroKrathong'),selected)});renderBoat(document.getElementById('previewKrathong'),selected);renderBoat(document.getElementById('heroKrathong'),selected)}
-function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
-function makeRiver(items){let river=document.getElementById('river');river.innerHTML='';items.slice(0,24).forEach((w,i)=>{let b=document.createElement('div');b.className='river-boat';b.style.left=(8+(i%6)*15)+'%';b.style.top=(12+Math.floor(i/6)*22)+'%';b.style.animationDelay=(-i*1.4)+'s';b.innerHTML=boatHTML(w.design||'lotus');b.onclick=()=>toast(`${w.name||'ไม่ระบุชื่อ'} • ${w.wish||''}`);river.appendChild(b)})}
-function renderCards(items){let c=document.getElementById('cards');c.innerHTML=items.map(w=>`<article class="wish-card"><h3>✦ ${escapeHTML(w.name||'ผู้ลอยกระทง')}</h3><small>${escapeHTML(w.design||'lotus')}</small><p>${escapeHTML(w.wish||'')}</p></article>`).join('')}
-function renderAll(){makeRiver(wishes);renderCards(wishes);document.getElementById('count').textContent=wishes.length}
-async function loadWishes(){if(supabase){try{const {data,error}=await supabase.from('krathongs').select('id,name,wish,design,created_at').order('created_at',{ascending:false}).limit(100);if(error)throw error;wishes=data||[]}catch(e){console.error('Supabase gallery:',e);toast('โหลด Gallery ไม่สำเร็จ ตรวจ SQL และ API Key');}}renderAll()}
-function animateLaunch(){let flight=document.getElementById('flight');flight.style.display='block';flight.innerHTML=boatHTML(selected);flight.style.position='fixed';flight.style.width='200px';flight.style.height='170px';flight.style.left='50%';flight.style.top='58%';flight.style.transform='translate(-50%,-50%)';if(window.gsap){gsap.fromTo(flight,{scale:.5,opacity:0,y:80},{scale:1,opacity:1,y:0,duration:.7,ease:'back.out(1.7)'});gsap.to(flight,{y:220,x:window.innerWidth*.25,scale:.3,opacity:0,duration:3,delay:.8,ease:'power2.inOut',onComplete:()=>flight.style.display='none'});}else setTimeout(()=>flight.style.display='none',2200)}
-document.getElementById('launch').onclick=async()=>{const name=document.getElementById('sender').value.trim(),wish=document.getElementById('wish').value.trim();if(!name||!wish)return toast('กรอกชื่อและคำอวยพรให้ครบก่อนนะ');if(name.length>30||wish.length>180)return toast('ชื่อหรือคำอวยพรยาวเกินไป');const row={name,wish,design:selected};animateLaunch();wishes.unshift(row);renderAll();showPage('gallery');toast('คำอวยพรของคุณกำลังลอยไป ✨');if(supabase){const {error}=await supabase.from('krathongs').insert(row);if(error){console.error('Supabase insert:',error);toast('กระทงแสดงแล้ว แต่บันทึกออนไลน์ไม่สำเร็จ');}else await loadWishes();}else toast('โหมดตัวอย่าง: ใส่ Supabase API Key เพื่อแชร์ออนไลน์');document.getElementById('sender').value='';document.getElementById('wish').value='';document.getElementById('wishCount').textContent='0 / 180'};
-document.getElementById('refresh').onclick=loadWishes;
-function subscribeRealtime(){if(!supabase||realtimeChannel)return;realtimeChannel=supabase.channel('krathongs-live-gallery').on('postgres_changes',{event:'INSERT',schema:'public',table:'krathongs'},()=>loadWishes()).subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('Realtime subscription status:',status)})}
-setup();loadWishes();subscribeRealtime();
+
+const keyReady =
+    SUPABASE_ANON_KEY.startsWith('ey') ||
+    SUPABASE_ANON_KEY.startsWith('sb_publishable');
+
+const supabaseClient =
+    (window.supabase && keyReady)
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
+
+const designs = [
+    ['gold', 'ทอง', '🌟'],
+    ['lotus', 'บัวชมพู', '🌸'],
+    ['jasmine', 'มะลิ', '🤍'],
+    ['marigold', 'ดาวเรือง', '🟠'],
+    ['purple', 'ม่วง', '💜'],
+    ['nature', 'ธรรมชาติ', '🍃'],
+    ['colorful', 'หลากสี', '🌈'],
+    ['moon', 'จันทร์', '🌙']
+];
+
+let selected = 'lotus';
+let wishes = [];
+let realtimeChannel = null;
+
+const pages = document.querySelectorAll('.page');
+
+function showPage(id) {
+    pages.forEach(p => p.classList.toggle('active', p.id === id));
+    if (id === 'gallery') loadWishes();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-page]').forEach(b =>
+    b.addEventListener('click', () => showPage(b.dataset.page))
+);
+
+document.getElementById('wish').addEventListener('input', e =>
+    document.getElementById('wishCount').textContent =
+        e.target.value.length + ' / 180'
+);
+
+function boatHTML(style) {
+    let color = {
+        gold: '#ffca45',
+        lotus: '#f6a6dd',
+        jasmine: '#fff4cf',
+        marigold: '#f99a3d',
+        purple: '#b98bff',
+        nature: '#81d5a0',
+        colorful: '#ff89d3',
+        moon: '#b7d9ff'
+    }[style] || '#ffd66b';
+
+    return `<div class="raft3d" style="--petal:${color}">
+        <div class="base"></div>
+        <div class="petals">
+            ${Array.from({ length: 12 }, (_, i) =>
+                `<i style="--i:${i}"></i>`
+            ).join('')}
+        </div>
+        <div class="center"></div>
+        <div class="candle"></div>
+        <div class="flame"></div>
+    </div>`;
+}
+
+function renderBoat(el, style) {
+    if (el) el.innerHTML = boatHTML(style);
+}
+
+function setup() {
+    document.getElementById('designs').innerHTML =
+        designs.map(([id, label, emoji]) =>
+            `<button class="design ${id === selected ? 'selected' : ''}"
+            data-design="${id}" type="button">${emoji} ${label}</button>`
+        ).join('');
+
+    document.querySelectorAll('[data-design]').forEach(b => {
+        b.onclick = () => {
+            selected = b.dataset.design;
+
+            document.querySelectorAll('.design').forEach(x =>
+                x.classList.toggle('selected', x.dataset.design === selected)
+            );
+
+            renderBoat(document.getElementById('previewKrathong'), selected);
+            renderBoat(document.getElementById('heroKrathong'), selected);
+        };
+    });
+
+    renderBoat(document.getElementById('previewKrathong'), selected);
+    renderBoat(document.getElementById('heroKrathong'), selected);
+}
+
+function escapeHTML(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[c]));
+}
+
+function toast(msg) {
+    let t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function makeRiver(items) {
+    let river = document.getElementById('river');
+    river.innerHTML = '';
+
+    items.slice(0, 24).forEach((w, i) => {
+        let b = document.createElement('div');
+        b.className = 'river-boat';
+        b.style.left = (8 + (i % 6) * 15) + '%';
+        b.style.top = (12 + Math.floor(i / 6) * 22) + '%';
+        b.style.animationDelay = (-i * 1.4) + 's';
+        b.innerHTML = boatHTML(w.design || 'lotus');
+        b.onclick = () => toast(`${w.name || 'ไม่ระบุชื่อ'} • ${w.wish || ''}`);
+        river.appendChild(b);
+    });
+}
+
+function renderCards(items) {
+    let c = document.getElementById('cards');
+
+    c.innerHTML = items.map(w =>
+        `<article class="wish-card">
+            <h3>✦ ${escapeHTML(w.name || 'ผู้ลอยกระทง')}</h3>
+            <small>${escapeHTML(w.design || 'lotus')}</small>
+            <p>${escapeHTML(w.wish || '')}</p>
+        </article>`
+    ).join('');
+}
+
+function renderAll() {
+    makeRiver(wishes);
+    renderCards(wishes);
+    document.getElementById('count').textContent = wishes.length;
+}
+
+async function loadWishes() {
+    if (supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('krathongs')
+                .select('id,name,wish,design,created_at')
+                .order('created_at', { ascending: false })
+                .limit(100);
+
+            if (error) throw error;
+            wishes = data || [];
+        } catch (e) {
+            console.error('Supabase gallery:', e);
+            toast('โหลด Gallery ไม่สำเร็จ ตรวจ SQL และ API Key');
+        }
+    }
+
+    renderAll();
+}
+
+function animateLaunch() {
+    let flight = document.getElementById('flight');
+
+    flight.style.display = 'block';
+    flight.innerHTML = boatHTML(selected);
+    flight.style.position = 'fixed';
+    flight.style.width = '200px';
+    flight.style.height = '170px';
+    flight.style.left = '50%';
+    flight.style.top = '58%';
+    flight.style.transform = 'translate(-50%,-50%)';
+
+    if (window.gsap) {
+        window.gsap.fromTo(
+            flight,
+            { scale: .5, opacity: 0, y: 80 },
+            { scale: 1, opacity: 1, y: 0, duration: .7, ease: 'back.out(1.7)' }
+        );
+
+        window.gsap.to(flight, {
+            y: 220,
+            x: window.innerWidth * .25,
+            scale: .3,
+            opacity: 0,
+            duration: 3,
+            delay: .8,
+            ease: 'power2.inOut',
+            onComplete: () => flight.style.display = 'none'
+        });
+    } else {
+        setTimeout(() => flight.style.display = 'none', 2200);
+    }
+}
+
+document.getElementById('launch').onclick = async () => {
+    const name = document.getElementById('sender').value.trim();
+    const wish = document.getElementById('wish').value.trim();
+
+    if (!name || !wish)
+        return toast('กรอกชื่อและคำอวยพรให้ครบก่อนนะ');
+
+    if (name.length > 30 || wish.length > 180)
+        return toast('ชื่อหรือคำอวยพรยาวเกินไป');
+
+    const row = { name, wish, design: selected };
+
+    animateLaunch();
+    wishes.unshift(row);
+    renderAll();
+    showPage('gallery');
+    toast('คำอวยพรของคุณกำลังลอยไป ✨');
+
+    if (supabaseClient) {
+        const { error } = await supabaseClient
+            .from('krathongs')
+            .insert(row);
+
+        if (error) {
+            console.error('Supabase insert:', error);
+            toast('กระทงแสดงแล้ว แต่บันทึกออนไลน์ไม่สำเร็จ');
+        } else {
+            await loadWishes();
+        }
+    } else {
+        toast('โหมดตัวอย่าง: ใส่ Supabase API Key เพื่อแชร์ออนไลน์');
+    }
+
+    document.getElementById('sender').value = '';
+    document.getElementById('wish').value = '';
+    document.getElementById('wishCount').textContent = '0 / 180';
+};
+
+document.getElementById('refresh').onclick = loadWishes;
+
+function subscribeRealtime() {
+    if (!supabaseClient || realtimeChannel) return;
+
+    realtimeChannel = supabaseClient
+        .channel('krathongs-live-gallery')
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'krathongs'
+            },
+            () => loadWishes()
+        )
+        .subscribe(status => {
+            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT')
+                console.warn('Realtime subscription status:', status);
+        });
+}
+
+setup();
+loadWishes();
+subscribeRealtime();
